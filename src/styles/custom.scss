@@ -1,0 +1,13 @@
+// Custom Bootstrap Theme Colors
+$theme-colors: (
+    "primary": #7A8D63,
+    // Custom Green
+    "secondary": #D9D9D9,
+    // Soft Gray
+    "dark": #2B2B2B,
+    // Dark Background
+    "light": #F4F1EB // Light Background
+);
+
+// Import Bootstrap After Customization
+@import "bootstrap/scss/bootstrap";
