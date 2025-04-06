@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { loginWithEmail, signInWithGoogle } from "../lib/firebase";
+import { loginWithEmail, signInWithGoogle, getUserProfile } from "../lib/firebase";
 import { Link, useNavigate } from "react-router-dom";
 import { Container, Form, Button, Alert, Card } from "react-bootstrap";
 
@@ -15,10 +15,18 @@ function Login() {
         setSuccess(false);
 
         try {
-            await loginWithEmail(email, password);
+            const user = await loginWithEmail(email, password);
             console.log("User logged in successfully!");
             setSuccess(true);
-            setTimeout(() => navigate("/dashboard"), 1500);
+
+            const profile = await getUserProfile(user.uid);
+            setTimeout(() => {
+                if (profile?.onboardingComplete) {
+                    navigate("/personal");
+                } else {
+                    navigate("/dashboard");
+                }
+            }, 1500);
         } catch (error: any) {
             setError(error.message);
         }

@@ -1,0 +1,552 @@
+[
+    {
+        "id": 1,
+        "title": "Two Sum",
+        "link": "https://leetcode.com/problems/two-sum/",
+        "difficulty": "Easy",
+        "pattern": ["Hash Table"],
+        "companies": [
+            "Amazon",
+            "Google",
+            "Facebook"
+        ]
+    },
+    {
+        "id": 2,
+        "title": "Add Two Numbers",
+        "link": "https://leetcode.com/problems/add-two-numbers/",
+        "difficulty": "Medium",
+        "pattern": ["Linked List"],
+        "companies": [
+            "Amazon",
+            "Microsoft",
+            "Bloomberg"
+        ]
+    },
+    {
+        "id": 3,
+        "title": "Longest Substring Without Repeating Characters",
+        "link": "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
+        "difficulty": "Medium",
+        "pattern": ["Sliding Window"],
+        "companies": [
+            "Google",
+            "Facebook",
+            "Apple"
+        ]
+    },
+    {
+        "id": 4,
+        "title": "Median of Two Sorted Arrays",
+        "link": "https://leetcode.com/problems/median-of-two-sorted-arrays/",
+        "difficulty": "Hard",
+        "pattern": ["Binary Search"],
+        "companies": [
+            "Google",
+            "Microsoft"
+        ]
+    },
+    {
+        "id": 5,
+        "title": "Longest Palindromic Substring",
+        "link": "https://leetcode.com/problems/longest-palindromic-substring/",
+        "difficulty": "Medium",
+        "pattern": ["Dynamic Programming"],
+        "companies": [
+            "Amazon",
+            "Microsoft"
+        ]
+    },
+    {
+        "id": 6,
+        "title": "Best Time to Buy and Sell Stock",
+        "link": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock/description/",
+        "difficulty": "Easy",
+        "pattern": ["Array"],
+        "companies": [
+            "Google", "Meta",  "Amazon",  "IBM",  "Google", "Microsoft","MorganStanley"
+        ]
+    },
+    {
+        "id": 7,
+        "title": "Contains Duplicate",
+        "link": "https://leetcode.com/problems/contains-duplicate/description/",
+        "difficulty": "Medium",
+        "pattern": ["Array"],
+        "companies": [
+            "Google","Amazon","Adobe","Meta","Bloomberg"
+        ]
+    },
+    {
+        "id": 8,
+        "title": "Missing Number",
+        "link": "https://leetcode.com/problems/missing-number/description/",
+        "difficulty": "Easy",
+        "pattern": ["Array","Bit Manipulation"],
+        "companies": [
+            "Uber",
+            "Google","Google","Meta","IBM","Microsoft"
+        ]
+    },
+    {
+        "id": 9,
+        "title": "Product of Array Except Self",
+        "link": "https://leetcode.com/problems/product-of-array-except-self/description/",
+        "difficulty": "Medium",
+        "pattern":["Array"],
+        "companies": [
+            "Amazon","Uber",
+            "Google","Google","Meta","IBM","Microsoft","Accenture","Apple","PayPal"
+        ]
+    },
+    {
+        "id": 10,
+        "title": "Maximum Subarray",
+        "link": "https://leetcode.com/problems/maximum-subarray/description/",
+        "difficulty": "Medium",
+        "pattern": ["Dynamic Programming"],
+        "companies": [
+            "Microsoft",
+            "Netflix", "Amazon","Uber",
+            "Google","Google","Meta","IBM","Accenture","Apple","PayPal"
+        ]
+    },
+    {
+        "id": 11,
+        "title": "Maximum Product Subarray",
+        "link": "https://leetcode.com/problems/maximum-product-subarray/description/",
+        "difficulty": "Medium",
+        "pattern": ["Dynamic Programming"],
+        "companies": [
+            "Google","LinkedIn","Amazon","Microsoft","TikTok","Meta"  ]
+    },
+    {
+        "id": 12,
+        "title": "Find Minimum in Rotated Sorted Array",
+        "link": "https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/description/",
+        "difficulty": "Medium",
+        "pattern": ["Binary Search"],
+        "companies": [
+            "Meta",
+            "Amazon","TikTok","Google","Walmart","Apple"
+        ]
+    },
+    {
+        "id": 13,
+        "title": "Search in Rotated Sorted Array",
+        "link": "https://leetcode.com/problems/search-in-rotated-sorted-array/description/",
+        "difficulty": "Medium",
+        "pattern": ["Sliding Window"],
+        "companies": [
+            "Uber",
+            "Microsoft","Meta",
+            "Amazon","TikTok","Google","Walmart","Apple","Samsung","Grammarly","LinkedIn"
+        ]
+    },
+    {
+        "id": 14,
+        "title": "3Sum",
+        "link": "https://leetcode.com/problems/3sum/description/",
+        "difficulty": "Medium",
+        "pattern": ["Two Pointers"],
+        "companies": [
+            "Google",
+            "Apple",
+            "Microsoft"
+        ]
+    },
+    {
+        "id": 15,
+        "title": "Container With Most Water",
+        "link": "https://leetcode.com/problems/container-with-most-water/description/",
+        "difficulty": "Medium",
+        "pattern": ["Two Pointers"],
+        "companies": [
+            "Google",
+            "Facebook",
+            "Apple","SAP","Yahoo","TikTok","VISA"
+        ]
+    },
+    {
+        "id": 16,
+        "title": "Sum of Two Integers",
+        "link": "https://leetcode.com/problems/sum-of-two-integers/description/",
+        "difficulty": "Medium",
+        "pattern": ["Binary"],
+        "companies": [
+            "Microsoft",
+            "Netflix"
+        ]
+    },
+    {
+        "id": 17,
+        "title": "Climbing Stairs",
+        "link": "https://leetcode.com/problems/climbing-stairs/description/",
+        "difficulty": "Easy",
+        "pattern": ["Dynamic Programming"],
+        "companies": [
+            "Google",
+            "Microsoft",
+            "TikTok","Accenture","Amazon","Deloitte","Meta"
+        ]
+    },
+    {
+        "id": 18,
+        "title": "Find All Numbers Disappeared in an Array",
+        "link": "https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/description/",
+        "difficulty": "Easy",
+        "pattern": ["Array"],
+        "companies": [
+            "Amazon","Google"
+        ]
+    },
+    {
+        "id": 19,
+        "title": "Single Number",
+        "link": "https://leetcode.com/problems/single-number/description/",
+        "difficulty": "Easy",
+        "pattern": ["Array","Bit Manipulation"],
+        "companies": [
+            "Facebook",
+            "Microsoft","Amazon","Meta","Apple","Accenture"
+        ]
+    },
+    {
+        "id": 20,
+        "title": "Range Sum Query - Immutable",
+        "link": "https://leetcode.com/problems/range-sum-query-immutable/description/",
+        "difficulty": "Easy",
+        "pattern": ["Dynamic Programming"],
+        "companies": [
+            "Amazon",
+            "Microsoft",
+            "Netflix","Meta"
+        ]
+    },
+    {
+        "id": 21,
+        "title": "Counting Bits",
+        "link": "https://leetcode.com/problems/counting-bits/description/",
+        "difficulty": "Easy",
+        "pattern": ["Dynamic Programming","Bit Manipulation"],
+        "companies": [
+            "Google","Amazon","Microsoft"
+        ]
+    },
+    {
+        "id": 22,
+        "title": "Linked List Cycle",
+        "link": "https://leetcode.com/problems/linked-list-cycle/description/",
+        "difficulty": "Easy",
+        "pattern": ["Fast & Slow Pointers"],
+        "companies": [
+            "Amazon","Google", "Meta","Cisco","Microsoft"
+        ]
+    },
+    {
+        "id": 23,
+        "title": "Middle of the Linked List",
+        "link": "https://leetcode.com/problems/middle-of-the-linked-list/description/",
+        "difficulty": "Eeasy",
+        "pattern": ["Fast & Slow Pointers"],
+        "companies": [
+            "Apple",
+            "Microsoft","Meta","Amazon"
+        ]
+    },
+    {
+        "id": 24,
+        "title": "Reverse Linked List",
+        "link": "https://leetcode.com/problems/reverse-linked-list/description/",
+        "difficulty": "Easy",
+        "pattern": ["In-place reversal of a linked list"],
+        "companies": [
+            "Google",
+            "Amazon","Meta","Microsoft","SAP","NVIDIA","Apple","TikTok","Adobe"
+        ]
+    },
+    {
+        "id": 25,
+        "title": "Palindrome Linked List",
+        "link": "https://leetcode.com/problems/palindrome-linked-list/description/",
+        "difficulty": "Easy",
+        "pattern": ["Fast & Slow Pointers"],
+        "companies": [
+            "Netflix","Google", "Microsoft","Amazon","Meta"
+        ]
+    },
+    {
+        "id": 26,
+        "title": "Remove Linked List Elements",
+        "link": "https://leetcode.com/problems/remove-linked-list-elements/description/",
+        "difficulty": "Easy",
+        "pattern": ["Fast & Slow Pointers"],
+        "companies": [
+            "Adobe",
+            "Google",
+            "Apple"
+        ]
+    },
+    {
+        "id": 27,
+        "title": "Remove Duplicates from Sorted List",
+        "link": "https://leetcode.com/problems/remove-duplicates-from-sorted-list/description/",
+        "difficulty": "Easy",
+        "pattern": ["Fast & Slow Pointers"],
+        "companies": [
+            "Uber","Amazon","Google","Microsoft","Meta","NVIDIA"
+        ]
+    },
+    {
+        "id": 28,
+        "title": "Merge Two Sorted Lists",
+        "link": "https://leetcode.com/problems/merge-two-sorted-lists/description/",
+        "difficulty": "Easy",
+        "pattern": ["Two Pointers"],
+        "companies": [
+            "Facebook",
+            "Adobe","Google","Microsoft","TikTok","LinkedIn","Meta","Amazon","Apple"
+        ]
+    },
+    {
+        "id": 29,
+        "title": "Binary Search",
+        "link": "https://leetcode.com/problems/binary-search/description/",
+        "difficulty": "Easy",
+        "pattern": ["Binary Search"],
+        "companies": [
+            "Facebook",
+            "Google","Amazon","Microsoft"
+        ]
+    },
+    {
+        "id": 30,
+        "title": "Find Smallest Letter Greater Than Target",
+        "link": "https://leetcode.com/problems/find-smallest-letter-greater-than-target/description/",
+        "difficulty": "Easy",
+        "pattern": ["Binary Search"],
+        "companies": [
+            "Adobe",
+            "Uber",
+            "Apple","Microsoft","Amazon","Meta","LinkedIn"
+        ]
+    },
+    {
+        "id": 31,
+        "title": "Average of Levels in Binary Tree",
+        "link": "https://leetcode.com/problems/average-of-levels-in-binary-tree/description/",
+        "difficulty": "Easy",
+        "pattern": ["BFS"],
+        "companies": [
+            "Google"
+            
+        ]
+    },
+    {
+        "id": 32,
+        "title": "Minimum Depth of Binary Tree",
+        "link": "https://leetcode.com/problems/minimum-depth-of-binary-tree/description/",
+        "difficulty": "Easy",
+        "pattern": ["BFS","DFS"],
+        "companies": [
+            "Amazon",
+            "Apple","Bloomberg"
+        ]
+    },
+    {
+        "id": 33,
+        "title": "Same Tree",
+        "link": "https://leetcode.com/problems/same-tree/description/",
+        "difficulty": "Easy",
+        "pattern": ["BFS"],
+        "companies": [
+            "Adobe",
+            "Netflix","Bloomberg","Amazon","Google","Microsoft","Meta"
+        ]
+    },
+    {
+        "id": 34,
+        "title": "Path Sum",
+        "link": "https://leetcode.com/problems/path-sum/description/",
+        "difficulty": "Easy",
+        "pattern":[ "DFS"],
+        "companies": [
+            "Apple",
+            "Netflix","Microsoft","Google","Meta"
+        ]
+    },
+    {
+        "id": 35,
+        "title": "Maximum Depth of Binary Tree",
+        "link": "https://leetcode.com/problems/maximum-depth-of-binary-tree/description/",
+        "difficulty": "Easy",
+        "pattern": ["DFS"],
+        "companies": [
+           "Amazon","LinkedIn","Google","Microsoft","Meta","Yahoo"
+        ]
+    },
+    {
+        "id": 36,
+        "title": "Diameter of Binary Tree",
+        "link": "https://leetcode.com/problems/diameter-of-binary-tree/description/",
+        "difficulty": "Easy",
+        "pattern": ["DFS"],
+        "companies": [
+            "Microsoft","Meta","Amazon","Google","LinkedIn","VISA","Bloomberg","TikTok"
+        ]
+    },
+    {
+        "id": 37,
+        "title": "Merge Two Binary Trees",
+        "link": "https://leetcode.com/problems/merge-two-binary-trees/description/",
+        "difficulty": "Easy",
+        "pattern": ["DFS"],
+        "companies": [
+            "Apple",
+            "Amazon",
+            "Google","Meta"
+        ]
+    },
+    {
+        "id": 38,
+        "title": "Smallest Range Covering Elements from K Lists",
+        "link": "https://leetcode.com/problems/smallest-range-covering-elements-from-k-lists/description/",
+        "difficulty": "Hard",
+        "pattern": ["Heap"],
+        "companies": [
+            "Google","Microsoft","Meta","Amazon"
+        ]
+    },
+    {
+        "id": 39,
+        "title": "Count of Range Sum",
+        "link": "https://leetcode.com/problems/count-of-range-sum/description/",
+        "difficulty": "Hard",
+        "pattern": ["Binary Search"],
+        "companies": [
+            "Amazon","Oracle"
+        ]
+    },
+    {
+        "id": 40,
+        "title": "Sliding Window Maximum",
+        "link": "https://leetcode.com/problems/sliding-window-maximum/description/",
+        "difficulty": "Hard",
+        "pattern": ["Greedy"],
+        "companies": [
+            "Apple",
+            "Netflix","Google","Adobe","Bloomberg","TikTok","Oracle","Microsoft"
+        ]
+    },
+    {
+        "id": 41,
+        "title": "Minimum Number of K Consecutive Bit Flips",
+        "link": "https://leetcode.com/problems/minimum-number-of-k-consecutive-bit-flips/description/",
+        "difficulty": "Hard",
+        "pattern": ["Sliding Window"],
+        "companies": [
+            "Adobe","Amazon","Meta","TikTok","Apple","Oracle"
+        ]
+    },
+    {
+        "id": 42,
+        "title": "Maximum Frequency Stack",
+        "link": "https://leetcode.com/problems/maximum-frequency-stack/description/",
+        "difficulty": "Hard",
+        "pattern": ["Bucket Sort","Heap"],
+        "companies": [
+            "Uber",
+            "Facebook","Microsoft","Oracle","TikTok","Amazon","Meta"
+        ]
+    },
+    {
+        "id": 43,
+        "title": "Binary Tree Maximum Path Sum",
+        "link": "https://leetcode.com/problems/binary-tree-maximum-path-sum/description/",
+        "difficulty": "Hard",
+        "pattern": ["DFS"],
+        "companies": [
+            "Meta","Google","Amazon","Oracle"
+        ]
+    },
+    {
+        "id": 44,
+        "title": "House Robber",
+        "link": "https://leetcode.com/problems/house-robber/description/",
+        "difficulty": "Medium",
+        "pattern": ["Dynamic Programming"],
+        "companies": [
+            "Google",
+            "Meta","Bloomberg","Cisco","PayPal","Adobe","Walmart","Microsoft"
+        ]
+    },
+    {
+        "id": 45,
+        "title": "Maximum Subarray",
+        "link": "https://leetcode.com/problems/maximum-subarray/description/",
+        "difficulty": "Medium",
+        "pattern": ["Dynamic Programming"],
+        "companies": [
+            "Microsoft",
+            "Netflix",
+            "Adobe","Amazon","TikTok","Apple","Accenture","Bloomberg","NVIDIA","Cisco","Oracle"
+        ]
+    },
+    {
+        "id": 46,
+        "title": "Coin Change",
+        "link": "https://leetcode.com/problems/coin-change/description/",
+        "difficulty": "Medium",
+        "pattern": ["Dynamic Programming"],
+        "companies": [
+            "Microsoft",
+            "Adobe","PayPal","TikTok","Accenture","Bloomberg","Pinterest","Walmart"
+        ]
+    },
+    {
+        "id": 47,
+        "title": "Palindromic Substrings",
+        "link": "https://leetcode.com/problems/palindromic-substrings/description/",
+        "difficulty": "Medium",
+        "pattern": ["Dynamic Programming"],
+        "companies": [
+            "Netflix",
+            "Apple",
+            "Meta","PayPal","Cisco","Microsoft","MorganStanley","Amazon"
+        ]
+    },
+    {
+        "id": 48,
+        "title": "Number of Longest Increasing Subsequence",
+        "link": "https://leetcode.com/problems/number-of-longest-increasing-subsequence/description/",
+        "difficulty": "Medium",
+        "pattern": ["Dynamic Programming"],
+        "companies": [
+            "TikTok",
+            "Amazon","Meta"
+        ]
+    },
+    {
+        "id": 49,
+        "title": "Sort List",
+        "link": "https://leetcode.com/problems/sort-list/description/",
+        "difficulty": "Medium",
+        "pattern": ["Fast & Slow Pointers"],
+        "companies": [
+            "Apple",
+            "Google",
+            "Microsoft","Meta","Oracle","Accenture","Cisco","TikTok","Bloomberg"
+        ]
+    },
+    {
+        "id": 50,
+        "title": "Pacific Atlantic Water Flow",
+        "link": "https://leetcode.com/problems/pacific-atlantic-water-flow/description/",
+        "difficulty": "Medium",
+        "pattern": ["BFS","DFS"],
+        "companies": [
+            "Adobe",
+            "Uber","Amazon","Google"
+        ]
+    }
+]

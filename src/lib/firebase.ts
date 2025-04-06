@@ -1,4 +1,5 @@
 import { initializeApp } from "firebase/app";
+import { collection, addDoc } from "firebase/firestore";
 import {
     getAuth,
     createUserWithEmailAndPassword,
@@ -10,7 +11,6 @@ import {
 } from "firebase/auth";
 import { getFirestore, setDoc, doc, getDoc } from "firebase/firestore";
 
-// ✅ Firebase Configuration (Use .env Variables for Security)
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
     authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -20,16 +20,12 @@ const firebaseConfig = {
     appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-// ✅ Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 
-/**  
- * ✅ Sign up user with email and password  
- * Stores first and last name in Firestore  
- */
+
 export const signUpWithEmail = async (email: string, password: string, firstName: string, lastName: string) => {
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -41,8 +37,8 @@ export const signUpWithEmail = async (email: string, password: string, firstName
             firstName: firstName,
             lastName: lastName,
             email: email,
-            role: "", // Placeholder for user role
-            companies: [], // Placeholder for selected companies
+            role: "", 
+            companies: [], 
             location: "",
             goalDate: "",
             learningHours: 0,
@@ -56,9 +52,6 @@ export const signUpWithEmail = async (email: string, password: string, firstName
     }
 };
 
-/**  
- * ✅ Log in user with email and password  
- */
 export const loginWithEmail = async (email: string, password: string) => {
     try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -70,9 +63,7 @@ export const loginWithEmail = async (email: string, password: string) => {
     }
 };
 
-/**  
- * ✅ Google Sign-In  
- */
+
 export const signInWithGoogle = async () => {
     try {
         const result = await signInWithPopup(auth, googleProvider);
@@ -98,9 +89,7 @@ export const signInWithGoogle = async () => {
     }
 };
 
-/**  
- * ✅ Log out user  
- */
+
 export const logout = async () => {
     try {
         await signOut(auth);
@@ -110,9 +99,7 @@ export const logout = async () => {
     }
 };
 
-/**  
- * ✅ Save User Profile Data  
- */
+
 export const saveUserProfile = async (uid: string, profileData: any) => {
     try {
         await setDoc(doc(db, "users", uid), profileData, { merge: true });
@@ -123,9 +110,7 @@ export const saveUserProfile = async (uid: string, profileData: any) => {
     }
 };
 
-/**  
- * ✅ Get User Profile Data  
- */
+
 export const getUserProfile = async (uid: string) => {
     try {
         const docSnap = await getDoc(doc(db, "users", uid));
@@ -138,6 +123,21 @@ export const getUserProfile = async (uid: string) => {
         }
     } catch (error) {
         console.error("Error getting user profile:", error);
+        throw error;
+    }
+};
+
+
+export const uploadDSAQuestions = async (questions: any[]) => {
+    const dsaCollection = collection(db, "dsa_questions");
+
+    try {
+        for (const q of questions) {
+            await addDoc(dsaCollection, q);
+        }
+        console.log("All questions uploaded to Firestore!");
+    } catch (error) {
+        console.error("Error uploading questions:", error);
         throw error;
     }
 };
