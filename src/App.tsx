@@ -29,7 +29,14 @@ function App() {
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/explore" element={<ExploreJobs />} />
       <Route path="/upload" element={<UploadQuestions />} />
-      <Route path="/questions" element={<Questions />} />
+      <Route path="/questions" element={<Questions question={{
+        id: "",
+        title: "",
+        link: "",
+        difficulty: "",
+        topic: "",
+        companies: []
+      }} />} />
       <Route path="/practice" element={<PracticePage />} />
       <Route path="/progress" element={<ProgressPage />} />
       <Route path="/community" element={<CommunityPage/>} />

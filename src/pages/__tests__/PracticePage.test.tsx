@@ -95,7 +95,7 @@ test('filters questions by difficulty', async () => {
   render(<WrappedPracticePage />);
   const filter = await screen.findByRole('combobox');
 
-  // Easy filter
+
   fireEvent.change(filter, { target: { value: 'Easy' } });
   expect(await screen.findByText(/easy question/i)).toBeInTheDocument();
   await waitFor(() => {
@@ -103,7 +103,6 @@ test('filters questions by difficulty', async () => {
     expect(screen.queryByText(/hard question/i)).not.toBeInTheDocument();
   });
 
-  // Hard filter
   fireEvent.change(filter, { target: { value: 'Hard' } });
   expect(await screen.findByText(/hard question/i)).toBeInTheDocument();
   await waitFor(() => {

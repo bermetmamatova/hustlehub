@@ -40,11 +40,9 @@ function ChangePassword() {
     }
 
     try {
-      // Re-authenticate
       const credential = EmailAuthProvider.credential(user.email, currentPassword);
       await reauthenticateWithCredential(user, credential);
 
-      // Update password
       await updatePassword(user, newPassword);
       setSuccess("Password updated successfully!");
       setTimeout(() => navigate("/practice"), 2000);

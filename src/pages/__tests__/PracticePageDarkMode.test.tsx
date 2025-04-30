@@ -62,18 +62,17 @@ describe("PracticePage Dark Mode Toggle", () => {
     const darkModeButton = await screen.findByRole("button", { name: /switch to dark mode/i });
     expect(darkModeButton).toBeInTheDocument();
 
-    // Click the dark mode button
+
     fireEvent.click(darkModeButton);
 
-    // After clicking, button text should change to "Switch to light mode"
+
     await waitFor(() => {
       expect(screen.getByRole("button", { name: /switch to light mode/i })).toBeInTheDocument();
     });
 
-    // Now click again
+
     fireEvent.click(screen.getByRole("button", { name: /switch to light mode/i }));
 
-    // After clicking again, button text should be back to "Switch to dark mode"
     await waitFor(() => {
       expect(screen.getByRole("button", { name: /switch to dark mode/i })).toBeInTheDocument();
     });

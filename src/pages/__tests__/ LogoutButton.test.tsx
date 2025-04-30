@@ -1,11 +1,10 @@
-// src/pages/__tests__/LogoutButtonCommunity.test.tsx
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { vi, test, beforeAll, expect } from "vitest";
 import { BrowserRouter } from "react-router-dom";
 import CommunityPage from "../CommunityPage";
-import { auth } from "../../lib/firebase"; // ✅ correct import!
+import { auth } from "../../lib/firebase"; 
 
-// Fake ResizeObserver for recharts or framer-motion
+
 beforeAll(() => {
   global.ResizeObserver = class ResizeObserver {
     observe() {}
@@ -14,7 +13,7 @@ beforeAll(() => {
   };
 });
 
-// 🛠 Full mock firebase/auth + db
+
 vi.mock("../../lib/firebase", async () => {
   const original = await vi.importActual<typeof import("../../lib/firebase")>("../../lib/firebase");
 
@@ -22,13 +21,13 @@ vi.mock("../../lib/firebase", async () => {
     ...original,
     auth: {
       currentUser: { uid: "mock-user", displayName: "Mock User" },
-      signOut: vi.fn(), // 🔥 important
+      signOut: vi.fn(), 
     },
-    db: {}, // dummy
+    db: {}, 
   };
 });
 
-// 🛠 Mock firebase/firestore
+
 vi.mock("firebase/firestore", async () => {
   const original = await vi.importActual<typeof import("firebase/firestore")>("firebase/firestore");
 
@@ -38,7 +37,6 @@ vi.mock("firebase/firestore", async () => {
     onSnapshot: (query: any, onSuccess: any) => {
       onSuccess({
         forEach: (callback: any) => {
-          // Simulate empty posts
         },
       });
       return () => {};
@@ -70,6 +68,6 @@ test("allows user to logout from Community Page", async () => {
   fireEvent.click(logoutButton);
 
   await waitFor(() => {
-    expect(auth.signOut).toHaveBeenCalledTimes(1); // ✅ Correct use now!
+    expect(auth.signOut).toHaveBeenCalledTimes(1); 
   });
 });

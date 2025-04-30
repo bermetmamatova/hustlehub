@@ -1,10 +1,8 @@
-// src/components/JobStatusModal.tsx
 import { useState, useEffect } from "react";
 import { Modal, Button, Form, Spinner, Alert } from "react-bootstrap";
-import { doc, setDoc, arrayUnion, Timestamp } from "firebase/firestore";
+import { doc, setDoc, updateDoc, arrayUnion, Timestamp } from "firebase/firestore";
 import { db } from "../lib/firebase";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-
 
 const applicationStatuses = ["accepted", "rejected", "ghosted"] as const;
 type JobApplicationStatus = typeof applicationStatuses[number];
@@ -44,46 +42,50 @@ function JobStatusModal({ show, onHide, onSave, job, userId }: Props) {
       setError("No job selected.");
       return;
     }
-  
+
     setSaving(true);
     setError(null);
-  
+
     const jobRef = doc(db, "users", userId, "applied_jobs", job.id);
-    const updateData: any = {
-      status,
-      updatedAt: Timestamp.now(),
-      job_id: job.id,
-      job_title: job.job_title || "N/A",
-      employer_name: job.employer_name || "N/A",
-    };
-  
+
     try {
+      const updateData = {
+        status,
+        updatedAt: Timestamp.now(),
+        job_id: job.id,
+        job_title: job.job_title || "N/A",
+        employer_name: job.employer_name || "N/A",
+      };
+
+      // Save job details
+      await setDoc(jobRef, updateData, { merge: true });
+
+      // Upload document if selected
       if (file) {
         const storage = getStorage();
-        const storageRef = ref(storage, `documents/${userId}/${job.id}/${file.name}`);
-        await uploadBytes(storageRef, file);
-        const downloadURL = await getDownloadURL(storageRef);
-  
-        updateData.documents = arrayUnion(downloadURL);
+        const filePath = `documents/${userId}/${job.id}/${file.name}`;
+        const fileRef = ref(storage, filePath);
+        await uploadBytes(fileRef, file);
+        const downloadURL = await getDownloadURL(fileRef);
+
+        await updateDoc(jobRef, {
+          documents: arrayUnion(downloadURL)
+        });
       }
-  
-      await setDoc(jobRef, updateData, { merge: true });
-      onSave();
+
+      onSave(); // Refresh parent
       onHide();
     } catch (err) {
-      console.error("Error uploading or saving:", err);
+      console.error("Upload/save error:", err);
       setError("Could not upload document or save changes.");
     } finally {
       setSaving(false);
       setFile(null);
     }
   };
-  
 
-  
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selected = e.target.files?.[0];
-    setFile(selected || null);
+    setFile(e.target.files?.[0] || null);
     setError(null);
   };
 
@@ -100,9 +102,7 @@ function JobStatusModal({ show, onHide, onSave, job, userId }: Props) {
         <Modal.Title>Update Job Application</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>
-          <strong>{job.job_title || "N/A"}</strong> @ {job.employer_name || "N/A"}
-        </p>
+        <p><strong>{job.job_title || "N/A"}</strong> @ {job.employer_name || "N/A"}</p>
 
         {error && <Alert variant="danger">{error}</Alert>}
 
@@ -114,42 +114,35 @@ function JobStatusModal({ show, onHide, onSave, job, userId }: Props) {
             disabled={saving}
           >
             {applicationStatuses.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
+              <option key={s} value={s}>{s}</option>
             ))}
           </Form.Select>
         </Form.Group>
 
         <Form.Group className="mb-3">
-          <Form.Label>Upload Document (Optional)</Form.Label>
+          <Form.Label>Upload Document (optional)</Form.Label>
           <Form.Control
             type="file"
             onChange={handleFileChange}
             disabled={saving}
             accept=".pdf,.doc,.docx,.txt,.jpg,.png"
           />
-          {file && (
-            <small className="text-muted d-block mt-1">Selected: {file.name}</small>
-          )}
+          {file && <small className="text-muted mt-1 d-block">📎 {file.name}</small>}
         </Form.Group>
 
         {Array.isArray(job.documents) && job.documents.length > 0 && (
-          <div className="mt-3 mb-3 border-top pt-3">
+          <div className="mt-3 border-top pt-3">
             <strong>Uploaded Documents:</strong>
-            {job.documents.map((docUrl, i) => (
-              <div
-                key={i}
-                className="d-flex align-items-center justify-content-between"
-              >
+            {job.documents.map((doc, i) => (
+              <div key={i} className="d-flex justify-content-between">
                 <a
-                  href={docUrl}
+                  href={doc}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-truncate"
-                  style={{ maxWidth: "80%" }}
+                  className="text-success text-truncate"
+                  style={{ maxWidth: "85%" }}
                 >
-                  📎 Document {i + 1}
+                  📄 Document {i + 1}
                 </a>
               </div>
             ))}
@@ -160,12 +153,7 @@ function JobStatusModal({ show, onHide, onSave, job, userId }: Props) {
         <Button variant="secondary" onClick={handleClose} disabled={saving}>
           Cancel
         </Button>
-        <Button
-          variant="primary"
-          onClick={handleSave}
-          disabled={saving}
-          style={{ minWidth: "120px" }}
-        >
+        <Button variant="primary" onClick={handleSave} disabled={saving}>
           {saving ? <Spinner as="span" animation="border" size="sm" /> : "Save Changes"}
         </Button>
       </Modal.Footer>

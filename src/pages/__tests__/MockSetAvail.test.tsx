@@ -52,10 +52,10 @@ test('allows user to set availability and shows it below', async () => {
   fireEvent.change(screen.getByDisplayValue('CET'), { target: { value: 'IST' } });
 
   const dateInputs = screen.getAllByDisplayValue('');
-  fireEvent.change(dateInputs[0], { target: { value: '2024-12-31' } }); // date
-  fireEvent.change(dateInputs[1], { target: { value: '15:00' } }); // time
+  fireEvent.change(dateInputs[0], { target: { value: '2024-12-31' } }); 
+  fireEvent.change(dateInputs[1], { target: { value: '15:00' } }); 
 
-  const addButton = screen.getByRole('button', { name: '' }); // icon-only add button
+  const addButton = screen.getByRole('button', { name: '' }); 
   fireEvent.click(addButton);
 
   await waitFor(() => {

@@ -4,7 +4,6 @@ import CommunityPage from '../CommunityPage';
 import { BrowserRouter } from 'react-router-dom';
 import { Timestamp } from 'firebase/firestore';
 
-// Mock Firebase
 vi.mock('../../lib/firebase', async () => {
   const original = await vi.importActual<typeof import('../../lib/firebase')>('../../lib/firebase');
   return {
@@ -36,14 +35,12 @@ vi.mock('firebase/firestore', async () => {
         },
       ];
 
-      // Simulate Firebase snapshot
       onSuccess({
         forEach: (callback: any) => {
           mockPosts.forEach((post) => callback({ id: post.id, data: () => post }));
         },
       });
 
-      // Return unsubscribe
       return () => {};
     },
     query: vi.fn(),

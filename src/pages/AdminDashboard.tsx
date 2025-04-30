@@ -53,10 +53,8 @@ function AdminDashboard() {
     if (!window.confirm("Are you sure you want to permanently delete this user?")) return;
 
     try {
-      // 1. Delete user profile from Firestore
       await deleteDoc(doc(db, "users", userId));
 
-      // 2. Delete user authentication account via backend
       await axios.post("http://localhost:5001/deleteUser", { uid: userId });
 
 
