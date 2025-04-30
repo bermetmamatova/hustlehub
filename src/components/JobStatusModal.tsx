@@ -1,93 +1,172 @@
-import { useState } from "react";
-import { Modal, Button, Form } from "react-bootstrap";
-import { doc, updateDoc, arrayUnion } from "firebase/firestore";
+// src/components/JobStatusModal.tsx
+import { useState, useEffect } from "react";
+import { Modal, Button, Form, Spinner, Alert } from "react-bootstrap";
+import { doc, setDoc, arrayUnion, Timestamp } from "firebase/firestore";
 import { db } from "../lib/firebase";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
+
+const applicationStatuses = ["accepted", "rejected", "ghosted"] as const;
+type JobApplicationStatus = typeof applicationStatuses[number];
+
+interface ModalJobData {
+  id: string;
+  job_title?: string;
+  employer_name?: string;
+  status: JobApplicationStatus;
+  documents?: string[];
+}
 
 interface Props {
   show: boolean;
   onHide: () => void;
-  onSave: () => void; // ✅ NEW: callback to trigger after saving
-  job: {
-    id: string;
-    job_title: string;
-    employer_name: string;
-    status: string;
-    documents?: string[];
-  };
+  onSave: () => void;
+  job: ModalJobData | null;
   userId: string;
 }
 
 function JobStatusModal({ show, onHide, onSave, job, userId }: Props) {
-  const [status, setStatus] = useState(job.status);
+  const [status, setStatus] = useState<JobApplicationStatus>("accepted");
   const [file, setFile] = useState<File | null>(null);
-  const [uploading, setUploading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (job) {
+      setStatus(job.status);
+      setFile(null);
+      setError(null);
+    }
+  }, [job]);
 
   const handleSave = async () => {
-    const jobRef = doc(db, "users", userId, "applied_jobs", job.id);
-    const update: any = { status };
-
-    if (file) {
-      setUploading(true);
-      const fakeUrl = `https://fake-url.com/${file.name}`; // Replace with real upload logic
-      update.documents = arrayUnion(fakeUrl);
+    if (!job) {
+      setError("No job selected.");
+      return;
     }
+  
+    setSaving(true);
+    setError(null);
+  
+    const jobRef = doc(db, "users", userId, "applied_jobs", job.id);
+    const updateData: any = {
+      status,
+      updatedAt: Timestamp.now(),
+      job_id: job.id,
+      job_title: job.job_title || "N/A",
+      employer_name: job.employer_name || "N/A",
+    };
+  
+    try {
+      if (file) {
+        const storage = getStorage();
+        const storageRef = ref(storage, `documents/${userId}/${job.id}/${file.name}`);
+        await uploadBytes(storageRef, file);
+        const downloadURL = await getDownloadURL(storageRef);
+  
+        updateData.documents = arrayUnion(downloadURL);
+      }
+  
+      await setDoc(jobRef, updateData, { merge: true });
+      onSave();
+      onHide();
+    } catch (err) {
+      console.error("Error uploading or saving:", err);
+      setError("Could not upload document or save changes.");
+    } finally {
+      setSaving(false);
+      setFile(null);
+    }
+  };
+  
 
-    await updateDoc(jobRef, update);
-    setUploading(false);
-    onSave(); // ✅ Notify parent of save
+  
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files?.[0];
+    setFile(selected || null);
+    setError(null);
+  };
+
+  const handleClose = () => {
+    setError(null);
     onHide();
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const input = e.target as HTMLInputElement;
-    if (input.files && input.files[0]) {
-      setFile(input.files[0]);
-    }
-  };
+  if (!job) return null;
 
   return (
-    <Modal show={show} onHide={onHide}>
+    <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
       <Modal.Header closeButton>
         <Modal.Title>Update Job Application</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <p>
-          <strong>{job.job_title}</strong> @ {job.employer_name}
+          <strong>{job.job_title || "N/A"}</strong> @ {job.employer_name || "N/A"}
         </p>
 
-        <Form.Group>
+        {error && <Alert variant="danger">{error}</Alert>}
+
+        <Form.Group className="mb-3">
           <Form.Label>Status</Form.Label>
-          <Form.Select value={status} onChange={(e) => setStatus(e.target.value)}>
-            <option value="applied">Applied</option>
-            <option value="accepted">Accepted</option>
-            <option value="rejected">Rejected</option>
-            <option value="ghosted">Ghosted</option>
+          <Form.Select
+            value={status}
+            onChange={(e) => setStatus(e.target.value as JobApplicationStatus)}
+            disabled={saving}
+          >
+            {applicationStatuses.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
           </Form.Select>
         </Form.Group>
 
-        <Form.Group className="mt-3">
+        <Form.Group className="mb-3">
           <Form.Label>Upload Document (Optional)</Form.Label>
-          <Form.Control type="file" onChange={handleFileChange} />
+          <Form.Control
+            type="file"
+            onChange={handleFileChange}
+            disabled={saving}
+            accept=".pdf,.doc,.docx,.txt,.jpg,.png"
+          />
+          {file && (
+            <small className="text-muted d-block mt-1">Selected: {file.name}</small>
+          )}
         </Form.Group>
 
         {Array.isArray(job.documents) && job.documents.length > 0 && (
-  <div className="mt-3">
-    <strong>Uploaded Documents:</strong>
-    {job.documents.map((doc, i) => (
-      <div key={i}>
-        <a href={doc} target="_blank" rel="noreferrer">
-          📎 Document {i + 1}
-        </a>
-      </div>
-    ))}
-  </div>
-)}
-
+          <div className="mt-3 mb-3 border-top pt-3">
+            <strong>Uploaded Documents:</strong>
+            {job.documents.map((docUrl, i) => (
+              <div
+                key={i}
+                className="d-flex align-items-center justify-content-between"
+              >
+                <a
+                  href={docUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-truncate"
+                  style={{ maxWidth: "80%" }}
+                >
+                  📎 Document {i + 1}
+                </a>
+              </div>
+            ))}
+          </div>
+        )}
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={onHide}>Cancel</Button>
-        <Button variant="primary" onClick={handleSave} disabled={uploading}>
-          {uploading ? "Saving..." : "Save Changes"}
+        <Button variant="secondary" onClick={handleClose} disabled={saving}>
+          Cancel
+        </Button>
+        <Button
+          variant="primary"
+          onClick={handleSave}
+          disabled={saving}
+          style={{ minWidth: "120px" }}
+        >
+          {saving ? <Spinner as="span" animation="border" size="sm" /> : "Save Changes"}
         </Button>
       </Modal.Footer>
     </Modal>

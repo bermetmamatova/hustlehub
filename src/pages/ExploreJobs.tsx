@@ -1,217 +1,258 @@
+// src/pages/ExploreJobs.tsx
 import { useEffect, useState } from "react";
-import { auth, getUserProfile, db } from "../lib/firebase";
-import { fetchJobs } from "../api/JobsAPI";
+import { auth, db, getUserProfile } from "../lib/firebase";
+import { fetchJobs, JobData } from "../api/JobsAPI";
 import {
-  Card,
   Container,
   Row,
   Col,
   Spinner,
-  Button,
+  Alert,
   Form,
+  Badge,
+  Card,
+  Button,
   Navbar,
   Nav,
 } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
-import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
+import { useNavigate, Link } from "react-router-dom";
 import {
   doc,
   setDoc,
   getDoc,
   collection,
+  getDocs,
   Timestamp,
 } from "firebase/firestore";
-import { Link } from "react-router-dom";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import { FaClipboardList, FaMapMarkerAlt, FaBuilding, FaExternalLinkAlt, FaSignOutAlt } from "react-icons/fa";
+
+const primaryColor = "#7A8D63";
 
 function ExploreJobs() {
   const user = auth.currentUser;
   const navigate = useNavigate();
-  const [jobs, setJobs] = useState<any[]>([]);
-  const [todoJobs, setTodoJobs] = useState<any[]>([]);
-  const [appliedJobs, setAppliedJobs] = useState<string[]>([]);
+
+  const [jobs, setJobs] = useState<JobData[]>([]);
+  const [todoJobs, setTodoJobs] = useState<JobData[]>([]);
+  const [appliedToday, setAppliedToday] = useState<string[]>([]);
+  const [goal, setGoal] = useState<number>(3);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const today = new Date().toISOString().split("T")[0];
 
   useEffect(() => {
-    if (!user) {
-      navigate("/login");
-      return;
-    }
-
-    const loadJobs = async () => {
+    const loadData = async () => {
       try {
-        const profile = await getUserProfile(user.uid);
-        if (profile) {
-          const { location, companies, role } = profile;
-          const companyString = companies.length > 0 ? companies[0] : "IT";
-
-          const fetchedJobs = await fetchJobs(location, companyString, role || "developer");
-          setJobs(fetchedJobs);
-
-          const docRef = doc(db, "users", user.uid, "meta", "jobTodo");
-          const docSnap = await getDoc(docRef);
-          if (docSnap.exists()) {
-            const data = docSnap.data();
-            setTodoJobs(data.todoJobs || []);
-            setAppliedJobs(data.appliedJobs || []);
-          }
+        if (!user) {
+          navigate("/login");
+          return;
         }
-      } catch (error) {
-        console.error("Error loading jobs:", error);
+
+        const profile = await getUserProfile(user.uid);
+        if (profile?.learningHours) setGoal(profile.learningHours);
+        else setGoal(3);
+
+        const todoSnap = await getDoc(doc(db, "users", user.uid, "meta", "jobTodo"));
+        const existingTodo = todoSnap.exists() ? todoSnap.data().todoJobs || [] : [];
+        setTodoJobs(existingTodo);
+
+        const appliedSnap = await getDocs(collection(db, "users", user.uid, "applied_jobs"));
+const applied = appliedSnap.docs
+  .filter((doc) =>
+    doc.data().appliedAt?.toDate().toISOString().startsWith(today)
+  )
+  .map((doc) => doc.data().job_id); 
+setAppliedToday(applied);
+
+        const location = profile?.location?.trim() || "Remote";
+const fetched = await fetchJobs(location );
+
+
+        
+        setJobs(
+          fetched.filter(
+            (j) => !existingTodo.some((tj: any) => tj.job_id === j.job_id)
+          )
+        );
+      } catch (err: any) {
+        setError("Error loading jobs: " + err.message);
       } finally {
         setLoading(false);
       }
     };
 
-    loadJobs();
-  }, [user, navigate]);
+    loadData();
+  }, [user, navigate, today]);
 
-  const handleDragEnd = (result: DropResult) => {
+  const handleDragEnd = (result: any) => {
     if (!result.destination) return;
     const { source, destination } = result;
 
     if (source.droppableId === "jobs" && destination.droppableId === "todoJobs") {
       const draggedJob = jobs[source.index];
-      const alreadyAdded = todoJobs.some((j) => j.job_id === draggedJob.job_id);
-      if (!alreadyAdded) {
-        const updatedList = [...todoJobs, draggedJob];
-        setTodoJobs(updatedList);
-        saveJobProgress(updatedList, appliedJobs);
+      const alreadyInTodo = todoJobs.some((j) => j.job_id === draggedJob.job_id);
+      if (!alreadyInTodo) {
+        const updatedTodo = [...todoJobs];
+        updatedTodo.splice(destination.index, 0, draggedJob);
+        setTodoJobs(updatedTodo);
+        setJobs(jobs.filter((_, i) => i !== source.index));
+        saveJobProgress(updatedTodo);
       }
     }
   };
 
-  const handleApply = async (job: any) => {
-    const updatedApplied = [...appliedJobs, job.job_id];
-    setAppliedJobs(updatedApplied);
-    saveJobProgress(todoJobs, updatedApplied);
-
-    await setDoc(doc(db, "users", user!.uid, "applied_jobs", job.job_id), {
-      job_id: job.job_id,
-      job_title: job.job_title,
-      employer_name: job.employer_name,
-      appliedAt: Timestamp.now().toDate().toISOString(),
-      status: "applied",
-    });
+  const saveJobProgress = async (todo: JobData[]) => {
+    if (!user) return;
+    await setDoc(
+      doc(db, "users", user.uid, "meta", "jobTodo"),
+      { todoJobs: todo },
+      { merge: true }
+    );
   };
 
-  const handleFileChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    jobId: string
-  ) => {
-    const file = e.target.files ? e.target.files[0] : null;
-    if (file) {
-      console.log(`File selected for ${jobId}:`, file.name);
-      // Optional file upload logic can go here
-    }
+  const toggleApplied = async (job: JobData) => {
+    if (!user) return;
+    if (appliedToday.includes(job.job_id)) return;
+
+    await setDoc(
+      doc(db, "users", user.uid, "applied_jobs", job.job_id),
+      {
+        job_id: job.job_id,
+        job_title: job.job_title,
+        employer_name: job.employer_name,
+        appliedAt: Timestamp.now(),
+        status: "applied",
+      },
+      { merge: true }
+    );
+
+    setAppliedToday((prev) => [...prev, job.job_id]);
   };
 
-  const saveJobProgress = async (todo: any[], applied: string[]) => {
-    if (user) {
-      await setDoc(doc(db, "users", user.uid, "meta", "jobTodo"), {
-        todoJobs: todo,
-        appliedJobs: applied,
-      }, { merge: true });
-    }
-  };
+  if (loading)
+    return (
+      <Container className="py-5 text-center">
+        <Spinner animation="border" />
+        <p className="mt-3">Loading jobs...</p>
+      </Container>
+    );
 
   return (
-    <>
-      <Navbar bg="dark" variant="dark" expand="lg" className="mb-4">
+    <div style={{ backgroundColor: "#f8f9fa", minHeight: "100vh" }}>
+      <Navbar bg="dark" variant="dark" expand="lg" className="mb-4 sticky-top shadow-sm">
         <Container>
-          <Navbar.Brand as={Link} to="/">HustleHub</Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="ms-auto">
-              <Nav.Link as={Link} to="/dashboard">Update My Preferences</Nav.Link>
-              <Nav.Link as={Link} to="/explore">Explore Jobs</Nav.Link>
-              <Nav.Link as={Link} to="/progress">Progress</Nav.Link>
-              <Nav.Link as={Link} to="/personal">Practice</Nav.Link>
-              <Nav.Link as={Link} to="/community">Practice</Nav.Link>
-              <Nav.Link onClick={() => auth.signOut()}>Log out</Nav.Link>
-            </Nav>
-          </Navbar.Collapse>
+          <Navbar.Brand as={Link} to="/">
+            <span className="rounded p-1 me-2 fw-bold" style={{ backgroundColor: primaryColor, color: "white" }}>
+              HH
+            </span>
+            HustleHub
+          </Navbar.Brand>
+          <Nav className="ms-auto">
+            <Nav.Link as={Link} to="/practice">Practice</Nav.Link>
+            <Nav.Link as={Link} to="/progress">Progress</Nav.Link>
+            <Nav.Link as={Link} to="/mydata">My Data</Nav.Link>
+            <Button variant="outline-light" onClick={() => auth.signOut()} className="ms-2">
+              <FaSignOutAlt />
+            </Button>
+          </Nav>
         </Container>
       </Navbar>
 
-      <Container className="my-5">
-        <h1 className="text-primary mb-4">Explore Jobs</h1>
-        {loading ? (
-          <div className="d-flex justify-content-center align-items-center">
-            <Spinner animation="border" variant="primary" />
-          </div>
-        ) : (
-          <DragDropContext onDragEnd={handleDragEnd}>
-            <Row>
-              <Col md={8}>
-                <h4 className="mb-3">Available Jobs</h4>
-                <Droppable droppableId="jobs">
-                  {(provided) => (
-                    <div ref={provided.innerRef} {...provided.droppableProps}>
-                      {jobs.map((job, index) => (
+      <Container className="pb-5">
+        <Row className="align-items-center mb-4">
+          <Col>
+            <h3><FaClipboardList className="me-2" /> Job Goal</h3>
+          </Col>
+          <Col className="text-end">
+            <Badge bg="light" className="me-2 text-dark">🎯 Goal: {goal}</Badge>
+            <Badge bg="success">✅ Applied: {appliedToday.length}</Badge>
+          </Col>
+        </Row>
+
+        {error && <Alert variant="danger">{error}</Alert>}
+
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <Row>
+            <Col md={7}>
+              <h5 className="mb-3 text-muted">Available Jobs</h5>
+              <Droppable droppableId="jobs">
+                {(provided) => (
+                  <div {...provided.droppableProps} ref={provided.innerRef}>
+                    {jobs.map((job, index) => (
+                      <Draggable key={job.job_id} draggableId={job.job_id} index={index}>
+                        {(provided) => (
+                          <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                            <Card className="mb-3 shadow-sm">
+                              <Card.Body>
+                                <Card.Title>{job.job_title}</Card.Title>
+                                <Card.Subtitle className="mb-2 text-muted">
+                                  <FaBuilding className="me-2" />{job.employer_name}
+                                </Card.Subtitle>
+                                <Card.Text>
+                                  <FaMapMarkerAlt className="me-2" />
+                                  {job.job_city}, {job.job_country}
+                                </Card.Text>
+                                <a href={job.job_apply_link} target="_blank" rel="noopener noreferrer">
+                                  <Button variant="outline-primary" size="sm">
+                                    <FaExternalLinkAlt className="me-1" /> View Job
+                                  </Button>
+                                </a>
+                              </Card.Body>
+                            </Card>
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </Col>
+
+            <Col md={5}>
+              <h5 className="mb-3 text-muted">To-Do List</h5>
+              <Droppable droppableId="todoJobs">
+                {(provided) => (
+                  <div {...provided.droppableProps} ref={provided.innerRef}>
+                    {todoJobs.map((job, index) => {
+                     const isDone = appliedToday.includes(job.job_id);
+                      return (
                         <Draggable key={job.job_id} draggableId={job.job_id} index={index}>
                           {(provided) => (
                             <div
                               ref={provided.innerRef}
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
-                              className="mb-3"
                             >
-                              <Card className="h-100 shadow-sm">
-                                <Card.Body>
-                                  <Card.Title>{job.job_title}</Card.Title>
-                                  <Card.Subtitle className="mb-2 text-muted">
-                                    {job.employer_name}
-                                  </Card.Subtitle>
-                                  <Card.Text>
-                                    {job.job_city}, {job.job_country}
-                                  </Card.Text>
-                                  <a href={job.job_apply_link} target="_blank" rel="noopener noreferrer">
-                                    <Button variant="success" className="w-100 mt-2">Apply</Button>
-                                  </a>
-                                </Card.Body>
+                              <Card
+                                className={`mb-3 p-3 border rounded ${isDone ? "bg-success text-white text-decoration-line-through" : ""}`}
+                              >
+                                <strong>{job.job_title}</strong>
+                                <p className="mb-1">{job.employer_name}</p>
+                                <Form.Check
+                                  type="checkbox"
+                                  label="Mark as Applied"
+                                  checked={isDone}
+                                  onChange={() => toggleApplied(job)}
+                                  disabled={isDone}
+                                />
                               </Card>
                             </div>
                           )}
                         </Draggable>
-                      ))}
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Droppable>
-              </Col>
-
-              <Col md={4}>
-                <h4 className="mb-3">Today's To-do List</h4>
-                <Droppable droppableId="todoJobs">
-                  {(provided) => (
-                    <div ref={provided.innerRef} {...provided.droppableProps}>
-                      {todoJobs.map((job, index) => (
-                        <div key={job.job_id} className={`mb-3 p-2 border rounded ${appliedJobs.includes(job.job_id) ? "bg-success text-white text-decoration-line-through" : ""}`}>
-                          <strong>{job.job_title}</strong>
-                          <p className="text-muted">{job.employer_name}</p>
-                          <Form.Check
-                            type="checkbox"
-                            label="Mark as Applied"
-                            checked={appliedJobs.includes(job.job_id)}
-                            onChange={() => handleApply(job)}
-                          />
-                          <Form.Label className="mt-2">Upload Resume or Cover Letter</Form.Label>
-                          <Form.Control
-                            type="file"
-                            onChange={(e) => handleFileChange(e as React.ChangeEvent<HTMLInputElement>, job.job_id)}
-                          />
-                        </div>
-                      ))}
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Droppable>
-              </Col>
-            </Row>
-          </DragDropContext>
-        )}
+                      );
+                    })}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </Col>
+          </Row>
+        </DragDropContext>
       </Container>
-    </>
+    </div>
   );
 }
 

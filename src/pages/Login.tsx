@@ -4,82 +4,101 @@ import { Link, useNavigate } from "react-router-dom";
 import { Container, Form, Button, Alert, Card } from "react-bootstrap";
 
 function Login() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
-    const [success, setSuccess] = useState(false);
-    const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
+  const navigate = useNavigate();
 
-    const handleLogin = async () => {
-        setError("");
+  const handleLogin = async () => {
+    setError("");
+    setSuccess(false);
+
+    try {
+      const user = await loginWithEmail(email, password);
+
+      if (!user.emailVerified) {
         setSuccess(false);
+        navigate("/verify");
+        return;
+      }
 
-        try {
-            const user = await loginWithEmail(email, password);
-            console.log("User logged in successfully!");
-            setSuccess(true);
+      setSuccess(true);
+      console.log("User logged in successfully!");
 
-            const profile = await getUserProfile(user.uid);
-            setTimeout(() => {
-                if (profile?.onboardingComplete) {
-                    navigate("/personal");
-                } else {
-                    navigate("/dashboard");
-                }
-            }, 1500);
-        } catch (error: any) {
-            setError(error.message);
+      const profile = await getUserProfile(user.uid);
+
+      setTimeout(() => {
+        if (profile?.role === "admin") {
+          navigate("/admin"); // admin → /admin
+        } else if (!profile?.onboardingComplete) {
+          navigate("/update"); // new users → onboarding
+        } else {
+          navigate("/practice"); // normal users → practice
         }
-    };
+      }, 1500);
 
-    return (
-        <Container className="d-flex align-items-center justify-content-center vh-100 bg-light">
-            <Card className="p-4 shadow w-100" style={{ maxWidth: "400px" }}>
-                <h2 className="text-center text-primary mb-4">Login to HustleHub 🚀</h2>
+    } catch (error: any) {
+      console.error(error);
+      setError(error.message);
+    }
+  };
 
-                {error && <Alert variant="danger">{error}</Alert>}
-                {success && <Alert variant="success">Login successful! Redirecting...</Alert>}
+  return (
+    <Container className="d-flex align-items-center justify-content-center vh-100 bg-light">
+      <Card className="p-4 shadow w-100" style={{ maxWidth: "400px" }}>
+        <h2 className="text-center text-primary mb-4">Login to HustleHub 🚀</h2>
 
-                <Form>
-                    <Form.Group className="mb-3">
-                        <Form.Label>Email address</Form.Label>
-                        <Form.Control
-                            type="email"
-                            placeholder="Enter email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                    </Form.Group>
+        {error && <Alert variant="danger">{error}</Alert>}
+        {success && <Alert variant="success">Login successful! Redirecting...</Alert>}
 
-                    <Form.Group className="mb-3">
-                        <Form.Label>Password</Form.Label>
-                        <Form.Control
-                            type="password"
-                            placeholder="Enter password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                    </Form.Group>
+        <Form>
+          <Form.Group className="mb-3">
+            <Form.Label>Email address</Form.Label>
+            <Form.Control
+              type="email"
+              placeholder="Enter email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </Form.Group>
 
-                    <div className="d-grid gap-2">
-                        <Button variant="primary" onClick={handleLogin}>
-                            Login
-                        </Button>
-                        <Button variant="danger" onClick={signInWithGoogle}>
-                            Sign in with Google
-                        </Button>
-                    </div>
+          <Form.Group className="mb-3">
+            <Form.Label>Password</Form.Label>
+            <Form.Control
+              type="password"
+              placeholder="Enter password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </Form.Group>
 
-                    <p className="text-center mt-3">
-                        Don't have an account?{" "}
-                        <Link to="/signup" className="text-decoration-none text-primary">
-                            Sign up here
-                        </Link>
-                    </p>
-                </Form>
-            </Card>
-        </Container>
-    );
+          <div className="d-grid gap-2">
+            <Button variant="primary" onClick={handleLogin}>
+              Login
+            </Button>
+            <Button variant="danger" onClick={signInWithGoogle}>
+              Sign in with Google
+            </Button>
+          </div>
+
+          <p className="text-center mt-3">
+            Don't have an account?{" "}
+            <Link to="/signup" className="text-decoration-none text-primary">
+              Sign up here
+            </Link>
+          </p>
+
+          <p className="mt-3 text-center">
+            <Link to="/forgot-password" style={{ color: "#7A8D63", fontWeight: "500" }}>
+              Forgot your password?
+            </Link>
+          </p>
+
+        </Form>
+      </Card>
+    </Container>
+  );
 }
 
 export default Login;

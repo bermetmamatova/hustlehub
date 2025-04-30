@@ -6,25 +6,48 @@ type Props = {
   checked?: boolean;
   onCheck?: () => void;
   variant?: string; 
+  darkMode: boolean; 
+  linkColor?: string; 
+  textColor?: string;
 };
 
-function QuestionCard({ question, onFinish, checked, onCheck }: Props) {
+function QuestionCard({
+  question,
+  onFinish,
+  checked,
+  onCheck,
+  variant,
+  darkMode,
+  linkColor = "#007bff",
+  textColor, // ✅ NEW
+}: Props) {
   return (
     <div
       className={`question-card border rounded p-3 shadow-sm mb-3 ${
         checked ? "border-success text-muted" : ""
       }`}
     >
-      <h5 style={{ textDecoration: checked ? "line-through" : "none" }}>
+      <h5
+        style={{
+          textDecoration: checked ? "line-through" : "none",
+          color: textColor,
+        }}
+      >
         {question.title}
       </h5>
-      <p>
+
+      <p style={{ color: textColor }}>
         <strong>Difficulty:</strong> {question.difficulty}
       </p>
-      <p>
+      <p style={{ color: textColor }}>
         <strong>Companies:</strong> {question.companies.join(", ")}
       </p>
-      <a href={question.link} target="_blank" rel="noreferrer">
+      <a
+        href={question.link}
+        target="_blank"
+        rel="noreferrer"
+        style={{ color: linkColor }}
+      >
         Solve on LeetCode
       </a>
 
@@ -37,7 +60,11 @@ function QuestionCard({ question, onFinish, checked, onCheck }: Props) {
             onChange={onCheck}
             id={`check-${question.id}`}
           />
-          <label className="form-check-label" htmlFor={`check-${question.id}`}>
+          <label
+            className="form-check-label"
+            htmlFor={`check-${question.id}`}
+            style={{ color: textColor }}
+          >
             Mark as complete
           </label>
         </div>

@@ -12,19 +12,32 @@ function Signup() {
     const [success, setSuccess] = useState(false);
     const navigate = useNavigate();
 
-    const handleSignup = async () => {
+    
+
+    const isPasswordStrong = (pwd: string) => {
+        return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(pwd);
+      };
+      
+      const handleSignup = async () => {
         setError("");
         setSuccess(false);
-
-        try {
-            const fullName = `${firstName} ${lastName}`;
-            await signUpWithEmail(email, password, fullName,lastName);
-            setSuccess(true);
-            setTimeout(() => navigate("/dashboard"), 1500);
-        } catch (error: any) {
-            setError(error.message);
+      
+        if (!isPasswordStrong(password)) {
+          setError("Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number, and a special character.");
+          return;
         }
-    };
+      
+        try {
+          const fullName = `${firstName} ${lastName}`;
+          const user = await signUpWithEmail(email, password, firstName, lastName);
+setSuccess(true);
+setTimeout(() => navigate("/verify"), 1500); 
+
+        } catch (error: any) {
+          setError(error.message);
+        }
+      };
+      
 
     return (
         <Container className="d-flex justify-content-center align-items-center min-vh-100 bg-light">
